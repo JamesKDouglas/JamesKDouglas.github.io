@@ -22,6 +22,8 @@ function advice(e){
     }
     let url = e.srcElement.baseURI;
     let file = url.split('/').pop().split('.').shift();
+    console.log(url);
+    console.log(file);
     alert(advice[file]);
     return;
 }
