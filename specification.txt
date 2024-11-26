@@ -1,0 +1,21 @@
+h1
+hr
+h2
+strong
+button
+figure
+figcaption
+p
+a
+u
+ul
+iframe
+li
+div
+script
+link
+meta
+
+Javascript is used to claim an animal has been seen, and gives the user fun advice for next time they see the animal.
+
+Bootstrap is used to provide styling to the buttons.
