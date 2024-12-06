@@ -1,3 +1,4 @@
+// Thank you to the CS50 Duck, who helped to write this. 
 function getData() {
     let config = {
         audio: {
