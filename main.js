@@ -12,6 +12,7 @@ function main(){
 }
 function advice(e){
     let advice = {
+        colorbear:"Yay! Now that you saw one you're bound to see more!",
         oo:"Yay! Next time you see one and they bounce away try asking if you can bounce with them!",
         cb:"Amazing! Next time you see one look around a corner try doing the same thing and making them laugh!",
         ccu:"Yay! Tell them you know James next time and see what happens.",
@@ -22,6 +23,10 @@ function advice(e){
     }
     let url = e.srcElement.baseURI;
     let file = url.split('/').pop().split('.').shift();
+    if (advice[file]== undefined){
+        console.log("must be colorbear page");
+        file = 'colorbear';
+    }
     alert(advice[file]);
     return;
 }
