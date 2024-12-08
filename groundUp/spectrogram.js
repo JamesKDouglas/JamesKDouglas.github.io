@@ -10,12 +10,12 @@ function getData() {
     navigator.mediaDevices.getUserMedia( config )
         .then(stream => {
             const audioContext = new AudioContext();
-            console.log(audioContext.sampleRate);
+            // console.log(audioContext.sampleRate);
             const source = audioContext.createMediaStreamSource(stream);
 
             const analyser = audioContext.createAnalyser();
             //The resizing works ok but it is based on initial load. If the window is small upon initial load the image will be cropped.
-            analyser.fftSize = 4096;
+            analyser.fftSize = 16384;
 
             source.connect(analyser);
             
@@ -103,7 +103,7 @@ function getData() {
                 requestWakeLock();
                 requestAnimationFrame(drawSpectrogram);
                 analyser.getFloatFrequencyData(dataArray);
-                let min = -120;
+                let min = -140;
                 let max = 0;    
                 let counter = 0;
                 if (yOffset>10){
