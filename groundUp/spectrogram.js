@@ -1,4 +1,4 @@
-// Thank you to the CS50 Duck, who helped to write this. 
+// Thank you to the CS50 Duck, who helped to write this.       
 function getData() {
     let config = {
         audio: {
@@ -6,7 +6,32 @@ function getData() {
           autoGainControl: false,
           noiseSuppression: false
         }
-      };
+      };            
+// All we can really do is downsample. I want to chart with a logarithmic axis
+// So the scale still goes from 0 to 20 000 hz (well. 16.5kHz is all I can hear)
+//But we discard samples in the high frequency. And the low frequency samples get spread out. We can see them more clearly but you can't get more data. There is no downsampling in the very lower end but as we go up in frequency, it takes place more. That is, more samples are discarded.
+//Suppose we want about 4000 pixels in the line. 
+//We need to generate a map that discards some of the samples but keeps 400 of them.
+// What is discarded will be more common in the higher frequency end.
+// Suppose we pass in data from an fft with 32 000 buckets. 
+// That's 16000 data points. 
+//How can we choose which indices of the 16 000 we want to keep?
+//Choose 4 000 indeex values.
+//y is the input. x is the output. For indexes.
+//x = logy*
+//
+    function makeLogMap(){
+        let finalRes = 4096;//approx
+        let arr = [];
+        let exp =1.165;//This comes from originalres. I just chose it experimentally. The point is to generate an array of final resolution size using an exponent.
+        
+        for (let i=0;i<finalRes;i++){
+            arr[i] = Math.round(i**exp);
+        }
+        return arr;
+    }
+    let logArr = makeLogMap();
+
     navigator.mediaDevices.getUserMedia( config )
         .then(stream => {
             const audioContext = new AudioContext();
@@ -15,7 +40,7 @@ function getData() {
 
             const analyser = audioContext.createAnalyser();
             //The resizing works ok but it is based on initial load. If the window is small upon initial load the image will be cropped.
-            analyser.fftSize = 16384;
+            analyser.fftSize = 32768;
 
             source.connect(analyser);
             
@@ -106,21 +131,44 @@ function getData() {
                 let min = -140;
                 let max = 0;    
                 let counter = 0;
+                let line = [];
+                let pix = [];
                 if (yOffset>10){
                     for (let i = 0; i < bufferLength; i++) {
                         let intensity = Math.round((dataArray[i] - min) / (max - min) * 249);
                         if (intensity<0){
                             intensity = 0;
                         }
-    
-                        let index = i * 4;
+                        
+                        // 4 values per pixel
+
+//So right now the line goes straight into this 1D array with rgba in series.
+//But I want to downsample.
+//an easy way to do that would be to have an array of pixels and discard ones i don't want.
+//For that I would like a 2D array of [rgba]
+
+                        //Generate heat map 1 pixel at a time
                         let rgb = rgbAll[intensity];
-                        imageData.data[index] = rgb[0];     // Red
-                        imageData.data[index + 1] = rgb[1]; // Green
-                        imageData.data[index + 2] = rgb[2]; // Blue
-                        imageData.data[index + 3] = 255;       // Alpha
+
+                        let pix = [rgb[0],rgb[1],rgb[2],255];
+                        line.push(pix);
                     }
+                    let newLine = [];
+                    //downsample
+                    for (let i=0;i<4096;i++){
+                        newLine[i] = line[logArr[i]];
+                    }
+
+                    for (let i=0;i<newLine.length-1;i++){
+                        let index = i * 4;
+                        imageData.data[index] = newLine[i][0];     // Red
+                        imageData.data[index + 1] = newLine[i][1]; // Green
+                        imageData.data[index + 2] = newLine[i][2]; // Blue
+                        imageData.data[index + 3] = 255;       // Alpha                        
+                    }
+                        
                     offScreenCtx.putImageData(imageData, 0, yOffset);
+                    line = [];
                 }
                 else {
                     //This just paints the scale at the top.
@@ -128,10 +176,10 @@ function getData() {
                         let intensity = Math.round((i/bufferLength)*249);
                         let index = i * 4;
                         let rgb = rgbAll[intensity];
-                        if(yOffset == 1){
-                            console.log(intensity);
-                            console.log(rgb);
-                        }
+                        // if(yOffset == 1){
+                        //     console.log(intensity);
+                        //     console.log(rgb);
+                        // }
                         imageData.data[index] = rgb[0];     // Red
                         imageData.data[index + 1] = rgb[1]; // Green
                         imageData.data[index + 2] = rgb[2]; // Blue

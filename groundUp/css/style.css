@@ -20,6 +20,7 @@
 	}
 	
 	body {
+		zoom:100%;
 		background-color: lightblue;
 	}
 }
