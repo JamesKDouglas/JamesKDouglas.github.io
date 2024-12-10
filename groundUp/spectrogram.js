@@ -133,60 +133,44 @@ function getData() {
                 let counter = 0;
                 let line = [];
                 let pix = [];
-                if (yOffset>10){
-                    for (let i = 0; i < bufferLength; i++) {
-                        let intensity = Math.round((dataArray[i] - min) / (max - min) * 249);
-                        if (intensity<0){
-                            intensity = 0;
-                        }
-                        
-                        // 4 values per pixel
+                
+                for (let i = 0; i < bufferLength; i++) {
+                    let intensity = Math.round((dataArray[i] - min) / (max - min) * 249);
+                    if (intensity<0){
+                        intensity = 0;
+                    }
+                    
+                    // 4 values per pixel
 
 //So right now the line goes straight into this 1D array with rgba in series.
 //But I want to downsample.
 //an easy way to do that would be to have an array of pixels and discard ones i don't want.
 //For that I would like a 2D array of [rgba]
 
-                        //Generate heat map 1 pixel at a time
-                        let rgb = rgbAll[intensity];
+                    //Generate heat map 1 pixel at a time
+                    let rgb = rgbAll[intensity];
 
-                        let pix = [rgb[0],rgb[1],rgb[2],255];
-                        line.push(pix);
-                    }
-                    let newLine = [];
-                    //downsample
-                    for (let i=0;i<4096;i++){
-                        newLine[i] = line[logArr[i]];
-                    }
-
-                    for (let i=0;i<newLine.length-1;i++){
-                        let index = i * 4;
-                        imageData.data[index] = newLine[i][0];     // Red
-                        imageData.data[index + 1] = newLine[i][1]; // Green
-                        imageData.data[index + 2] = newLine[i][2]; // Blue
-                        imageData.data[index + 3] = 255;       // Alpha                        
-                    }
-                        
-                    offScreenCtx.putImageData(imageData, 0, yOffset);
-                    line = [];
+                    let pix = [rgb[0],rgb[1],rgb[2],255];
+                    line.push(pix);
                 }
-                else {
-                    //This just paints the scale at the top.
-                    for (let i = 0; i < bufferLength; i++) {
-                        let intensity = Math.round((i/bufferLength)*249);
-                        let index = i * 4;
-                        let rgb = rgbAll[intensity];
-                        // if(yOffset == 1){
-                        //     console.log(intensity);
-                        //     console.log(rgb);
-                        // }
-                        imageData.data[index] = rgb[0];     // Red
-                        imageData.data[index + 1] = rgb[1]; // Green
-                        imageData.data[index + 2] = rgb[2]; // Blue
-                        imageData.data[index + 3] = 255;       // Alpha
-                    }
-                    offScreenCtx.putImageData(imageData, 0, yOffset);
+                let newLine = [];
+                //downsample
+                // for (let i=0;i<4096;i++){
+                //     newLine[i] = line[logArr[i]];
+                // }
+                newLine = line;
+                // assign the newly transformed data to the line
+                for (let i=0;i<newLine.length-1;i++){
+                    let index = i * 4;
+                    imageData.data[index] = newLine[i][0];     // Red
+                    imageData.data[index + 1] = newLine[i][1]; // Green
+                    imageData.data[index + 2] = newLine[i][2]; // Blue
+                    imageData.data[index + 3] = 255;       // Alpha                        
                 }
+                    
+                offScreenCtx.putImageData(imageData, 0, yOffset);
+                line = [];
+                
                 yOffset = (yOffset + 1) % HEIGHT;
                 canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
                 canvasCtx.drawImage(offScreenCanvas, 0, 0);
