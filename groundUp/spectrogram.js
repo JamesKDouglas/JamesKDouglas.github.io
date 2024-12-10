@@ -25,12 +25,18 @@ function getData() {
     
         let lc = [];//log curve with x,y values. The x value is just the index.
         let y = 0;
+        let base = 20;
+
+        function getBaseLog(base, num) {
+            return Math.log(num) / Math.log(base);
+        }
         for (let x=1;x<initial;x++){
-            y = Math.log10(x);
+              
+            y = getBaseLog(base, x);
             lc.push(y);
         }
         
-        let range = Math.log10(initial);
+        let range = getBaseLog(base, initial);
         let inc = range/final;
     
         let pixInclude = [];
