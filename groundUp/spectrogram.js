@@ -6,21 +6,8 @@ function getData() {
           autoGainControl: false,
           noiseSuppression: false
         }
-      };            
-// All we can really do is downsample. I want to chart with a logarithmic axis
-// So the scale still goes from 0 to 20 000 hz (well. 16.5kHz is all I can hear)
-//But we discard samples in the high frequency. And the low frequency samples get spread out. We can see them more clearly but you can't get more data. There is no downsampling in the very lower end but as we go up in frequency, it takes place more. That is, more samples are discarded.
-//Suppose we want about 4000 pixels in the line. 
-//We need to generate a map that discards some of the samples but keeps 400 of them.
-// What is discarded will be more common in the higher frequency end.
-// Suppose we pass in data from an fft with 32 000 buckets. 
-// That's 16000 data points. 
-//How can we choose which indices of the 16 000 we want to keep?
-//Choose 4 000 indeex values.
-//y is the input. x is the output. For indexes.
-//x = logy*
-//
-    function makeLogMap(){
+      };        
+    function makeExpMap(){
         let finalRes = 4096;//approx
         let arr = [];
         let exp =1.165;//This comes from originalres. I just chose it experimentally. The point is to generate an array of final resolution size using an exponent.
@@ -30,7 +17,34 @@ function getData() {
         }
         return arr;
     }
-    let logArr = makeLogMap();
+    function mapLog(final, initial){
+
+        //First, make a logarithmic curve
+        //Then go through the curve looking at the logarithmic value.
+        //Select samples by increment.
+    
+        let lc = [];//log curve with x,y values. The x value is just the index.
+        let y = 0;
+        for (let x=1;x<initial;x++){
+            y = Math.log10(x);
+            lc.push(y);
+        }
+        
+        let range = Math.log10(initial);
+        let inc = range/final;
+    
+        let pixInclude = [];
+        // Now, downsample
+        let counter = 0;//samples collected, not the same as samples examined. i is samples examined.
+        for (let i=0;i<lc.length;i++){
+            if (lc[i] >= counter*inc){
+                pixInclude.push(i)
+                counter++;
+            }
+        }
+        return pixInclude;
+    }
+
 
     navigator.mediaDevices.getUserMedia( config )
         .then(stream => {
@@ -47,11 +61,14 @@ function getData() {
             const bufferLength = analyser.frequencyBinCount;
             const dataArray = new Float32Array(bufferLength);
 
+            
             const canvas = document.getElementById('myCanvas');
             const offScreenCanvas = document.createElement('canvas');
             //Initial height and width is here, then resizing is just with css
             let WIDTH = window.innerWidth;
             let HEIGHT = window.innerHeight;
+            
+            let logArr = mapLog(WIDTH, bufferLength);
 
             canvas.width = WIDTH;
             canvas.height = HEIGHT;
@@ -139,14 +156,6 @@ function getData() {
                     if (intensity<0){
                         intensity = 0;
                     }
-                    
-                    // 4 values per pixel
-
-//So right now the line goes straight into this 1D array with rgba in series.
-//But I want to downsample.
-//an easy way to do that would be to have an array of pixels and discard ones i don't want.
-//For that I would like a 2D array of [rgba]
-
                     //Generate heat map 1 pixel at a time
                     let rgb = rgbAll[intensity];
 
@@ -154,11 +163,15 @@ function getData() {
                     line.push(pix);
                 }
                 let newLine = [];
-                //downsample
-                // for (let i=0;i<4096;i++){
-                //     newLine[i] = line[logArr[i]];
-                // }
-                newLine = line;
+
+                // downsample
+                for (let i=0;i<WIDTH;i++){
+                    newLine[i] = line[logArr[i]];
+                }
+
+                //downsampling turn off switch!
+                // newLine = line;
+
                 // assign the newly transformed data to the line
                 for (let i=0;i<newLine.length-1;i++){
                     let index = i * 4;
