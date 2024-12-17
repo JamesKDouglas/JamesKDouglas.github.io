@@ -7,16 +7,6 @@ function getData() {
           noiseSuppression: false
         }
       };        
-    function makeExpMap(){
-        let finalRes = 4096;//approx
-        let arr = [];
-        let exp =1.165;//This comes from originalres. I just chose it experimentally. The point is to generate an array of final resolution size using an exponent.
-        
-        for (let i=0;i<finalRes;i++){
-            arr[i] = Math.round(i**exp);
-        }
-        return arr;
-    }
     function mapLog(final, initial){
 
         //First, make a logarithmic curve
@@ -25,18 +15,22 @@ function getData() {
     
         let lc = [];//log curve with x,y values. The x value is just the index.
         let y = 0;
-        let base = 20;
+
+        //ok changing the base isn't working. It seems stuck at base 10 or maybe e.
+        let base = 10;
 
         function getBaseLog(base, num) {
             return Math.log(num) / Math.log(base);
         }
         for (let x=1;x<initial;x++){
               
-            y = getBaseLog(base, x);
+            // y = getBaseLog(base, x);
+            y = Math.log10(x);
             lc.push(y);
         }
         
-        let range = getBaseLog(base, initial);
+        // let range = getBaseLog(base, initial);
+        let range = Math.log10(initial);
         let inc = range/final;
     
         let pixInclude = [];
@@ -151,7 +145,7 @@ function getData() {
                 requestWakeLock();
                 requestAnimationFrame(drawSpectrogram);
                 analyser.getFloatFrequencyData(dataArray);
-                let min = -140;
+                let min = -130;
                 let max = 0;    
                 let counter = 0;
                 let line = [];
