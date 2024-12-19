@@ -1,4 +1,4 @@
-# YOUR PROJECT TITLE
+# Spectrogram 
 #### Video Demo:  
 ### Live Demo https://jameskdouglas.github.io/groundUp/
 #### Description:

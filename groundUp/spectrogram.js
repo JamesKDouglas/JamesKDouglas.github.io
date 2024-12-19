@@ -8,7 +8,7 @@ function getData() {
         }
       };        
     function mapLog(final, initial){
-
+     
         //First, make a logarithmic curve
         //Then go through the curve looking at the logarithmic value.
         //Select samples by increment.
@@ -16,14 +16,29 @@ function getData() {
         let lc = [];//log curve with x,y values. The x value is just the index.
         let y = 0;
 
-        //ok changing the base isn't working. It seems stuck at base 10 or maybe e.
+        //This was trying to change the base,
         let base = 10;
-
         function getBaseLog(base, num) {
             return Math.log(num) / Math.log(base);
         }
+
+        let pixInclude = [];
+        //This whole function is for downsampling. If the final resolution is larger than the initial that's upsampling or interpretation.
+        //What can happen here is the screen is resized to be larger than the number of bins.
+        //That is, the expressed final resolution is larger than the initial resolution!
+        //Reset the fftSize. Find the next higher power of two and set it to that.
+        // if (final>=initial){
+        //     console.log("window is wider than fft. Can't downsample for logarithmic scale. Raising fftSize.")
+        //     let newfftSize = final;
+        //     poTwo = 1;
+        //     while (poTwo < final){
+        //         poTwo = poTwo*2;
+        //     }
+        //     analyser.fftSize = 2**poTwo;
+        // } 
+
+        //Now on to the rest,
         for (let x=1;x<initial;x++){
-              
             // y = getBaseLog(base, x);
             y = Math.log10(x);
             lc.push(y);
@@ -33,12 +48,12 @@ function getData() {
         let range = Math.log10(initial);
         let inc = range/final;
     
-        let pixInclude = [];
-        // Now, downsample
+        // Do the actual downsampling:
+
         let counter = 0;//samples collected, not the same as samples examined. i is samples examined.
         for (let i=0;i<lc.length;i++){
             if (lc[i] >= counter*inc){
-                pixInclude.push(i)
+                pixInclude.push(i);
                 counter++;
             }
         }
@@ -54,7 +69,30 @@ function getData() {
 
             const analyser = audioContext.createAnalyser();
             //The resizing works ok but it is based on initial load. If the window is small upon initial load the image will be cropped.
-            analyser.fftSize = 32768;
+            
+            //This parameter is literally the number of bins reported, so it directly affects the frequency resolution.
+            //However, it is also weirdly linked to time resolution. There is apparently no other way to manage the time resolution.
+            //So both aspects of the fft are being managed by this one combined number somehow.
+            analyser.fftSize = 4096;
+            let WIDTH = window.innerWidth;
+
+
+            //This will avoid the program crashing. However, it throws an error, "spectrogram.js:164 NotAllowedError, The requesting page is not visible"
+            //And does not actually increase the fft size. The spectra being delivered remains the same. 
+            if (WIDTH>=(analyser.fftSize/2)){
+                console.log("WIDTH:", WIDTH);
+                console.log("Window is wider than the number of frequencies available from the fft. Raising fftSize. This will reduce resolution in the time domain.")
+
+                poTwo = 1;
+                while (poTwo < WIDTH){
+                    poTwo = poTwo*2;
+                }
+                console.log("new fft:", poTwo*2);
+                analyser.fftSize = poTwo*2;
+            } 
+
+            //When I do a careful test changing this, it seems to do very little.
+            analyser.smoothingTimeConstant = 0;
 
             source.connect(analyser);
             
@@ -65,9 +103,9 @@ function getData() {
             const canvas = document.getElementById('myCanvas');
             const offScreenCanvas = document.createElement('canvas');
             //Initial height and width is here, then resizing is just with css
-            let WIDTH = window.innerWidth;
             let HEIGHT = window.innerHeight;
             
+
             let logArr = mapLog(WIDTH, bufferLength);
 
             canvas.width = WIDTH;
