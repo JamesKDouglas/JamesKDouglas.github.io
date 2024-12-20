@@ -54,7 +54,9 @@ function getData() {
 
             const analyser = audioContext.createAnalyser();
             //The resizing works ok but it is based on initial load. If the window is small upon initial load the image will be cropped.
-            analyser.fftSize = 32768;
+
+            let fftSize = 2**14;
+            analyser.fftSize = fftSize;
 
             source.connect(analyser);
             
