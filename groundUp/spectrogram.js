@@ -69,29 +69,29 @@ function getData() {
 
             const analyser = audioContext.createAnalyser();
             //The resizing works ok but it is based on initial load. If the window is small upon initial load the image will be cropped.
-            
             //This parameter is literally the number of bins reported, so it directly affects the frequency resolution.
-            //However, it is also weirdly linked to time resolution. There is apparently no other way to manage the time resolution.
-            //So both aspects of the fft are being managed by this one combined number somehow.
-            analyser.fftSize = 4096;
+            //However, it is also linked to time resolution. There is apparently no other way to manage the time resolution.
+            let fftSizeDefault = 2**14;//2^12 is 4096. The number of bins used is half this.
+            console.log("fftSizeDefault:", fftSizeDefault);
             let WIDTH = window.innerWidth;
-
-
-            //This will avoid the program crashing. However, it throws an error, "spectrogram.js:164 NotAllowedError, The requesting page is not visible"
-            //And does not actually increase the fft size. The spectra being delivered remains the same. 
-            if (WIDTH>=(analyser.fftSize/2)){
+            if (WIDTH>=(fftSizeDefault/2)){
                 console.log("WIDTH:", WIDTH);
                 console.log("Window is wider than the number of frequencies available from the fft. Raising fftSize. This will reduce resolution in the time domain.")
 
-                poTwo = 1;
+                poTwo = 1;//power of 2
                 while (poTwo < WIDTH){
                     poTwo = poTwo*2;
                 }
-                console.log("new fft:", poTwo*2);
+                console.log("new fftSize:", poTwo*2);
                 analyser.fftSize = poTwo*2;
-            } 
+            } else {
+                analyser.fftSize = fftSizeDefault;
+            }
 
-            //When I do a careful test changing this, it seems to do very little.
+
+            
+
+            //This only matters much when the fftSize is small.
             analyser.smoothingTimeConstant = 0;
 
             source.connect(analyser);
