@@ -1,17 +1,27 @@
-# YOUR PROJECT TITLE
+# GroundUp Spectrogram 
 #### Video Demo:  
 ### Live Demo https://jameskdouglas.github.io/groundUp/
 #### Description:
 
 This is a music visualization that creates a spectrogram of microphone data (a sonogram). It is the final project for CS50, a computer science course from Harvard. 
 
-I made it to enable display on a 4K screen. To make it, I learned about streaming audio using the Web Audio API and drawing images in a browser. 
+This program makes most laptops into high resolution spectrograph machines. In particular, it was made to broadcast to a 4K screen.
 
-The program takes the sound from your microphone and performs a mathematical operation called a Fast Fourier Transform. I like this operation and remember it from studying nuclear magnetic resonance spectra. This visualization is special to me because it shows you just about everything. 
+To make it, I learned about streaming audio using the Web Audio API and drawing images in a browser. Achieving a high quality spectrogram meant learning more about resolution mapping and learning more about fast fourier transforms.
 
-Inspiration comes from the Spectroid app, which works well on my old Android phone but can only run on Android devices. Some Android devices can broadcast to a larger screen, but older ones cannot. This app enables more devices to create a high resolution spectrogram. To me, that is the point of a web app - it makes good use of the common platform of a browser.
+The program takes the sound from your microphone and uses the Web Audio API built into most browsers to perform a mathematical operation called a Fast Fourier Transform. This wizardry makes a list of all the frequencies that you hear and how loud they are. That's what you see on the screen when the app is running. 
 
-The goal was to create something that "just works". There is no need to log in. Just use the URL. Also, I would like this project to be useful to others in their code journey, which means that it is important to keep it simple. It is meant for display at a party so one of the main specifications is, "no mucking around necessary".
+Inspiration comes from the Spectroid app, which works well on my old Android phone but can only run on Android devices and not older ones. 
+
+The goal was to create something that doesn't need to be installed or signed up for. Just use the URL. 
+
+I would like this project to be useful to others in their code journey, which means that it is important to keep it simple. It is meant for display at a party so one of the main specifications is, "no mucking around necessary".
+
+HOW TO USE:
+- Go to the URL: https://jameskdouglas.github.io/groundUp/
+- If you change the screen size then refresh your browser to correct the dimensions.
+
+Download the code from the github repository and change it if you want to. Use the terminal command "http-server" to serve it to a browser locally.
 
 The simplity is inspired by a Supreme Court Justice Oliver Holmes,
 

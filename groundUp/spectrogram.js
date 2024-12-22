@@ -1,4 +1,5 @@
-// Thank you to the CS50 Duck, who helped to write this.       
+// Thank you to the CS50 Duck, who helped to write this.
+
 function getData() {
     let config = {
         audio: {
@@ -7,23 +8,23 @@ function getData() {
           noiseSuppression: false
         }
       };        
-    function mapLog(final, initial){
 
+    function mapLog(final, initial){
         //First, make a logarithmic curve
         //Then go through the curve looking at the logarithmic value.
-        //Select samples by increment.
     
         let lc = [];//log curve with x,y values. The x value is just the index.
         let y = 0;
 
-        //ok changing the base isn't working. It seems stuck at base 10 or maybe e.
+        //This was trying to change the base,
         let base = 10;
-
         function getBaseLog(base, num) {
             return Math.log(num) / Math.log(base);
         }
+
+        let pixInclude = [];
+
         for (let x=1;x<initial;x++){
-              
             // y = getBaseLog(base, x);
             y = Math.log10(x);
             lc.push(y);
@@ -33,18 +34,17 @@ function getData() {
         let range = Math.log10(initial);
         let inc = range/final;
     
-        let pixInclude = [];
-        // Now, downsample
+        // Do the actual downsampling:
+
         let counter = 0;//samples collected, not the same as samples examined. i is samples examined.
         for (let i=0;i<lc.length;i++){
             if (lc[i] >= counter*inc){
-                pixInclude.push(i)
+                pixInclude.push(i);
                 counter++;
             }
         }
         return pixInclude;
     }
-
 
     navigator.mediaDevices.getUserMedia( config )
         .then(stream => {
@@ -55,21 +55,40 @@ function getData() {
             const analyser = audioContext.createAnalyser();
             //The resizing works ok but it is based on initial load. If the window is small upon initial load the image will be cropped.
 
-            let fftSize = 2**14;
+            let fftSize = 2**13;
             analyser.fftSize = fftSize;
+            //This parameter is literally the number of bins reported, so it directly affects the frequency resolution.
+            //However, it is also linked to time resolution. There is apparently no other way to manage the time resolution.
+            let fftSizeDefault = 2**14;//2^12 is 4096. The number of bins used is half this.
+            console.log("fftSizeDefault:", fftSizeDefault);
+            let WIDTH = window.innerWidth;
+            if (WIDTH>=(fftSizeDefault/2)){
+                console.log("WIDTH:", WIDTH);
+                console.log("Window is wider than the number of frequencies available from the fft. Raising fftSize. This will reduce resolution in the time domain.")
+
+                poTwo = 1;//power of 2
+                while (poTwo < WIDTH){
+                    poTwo = poTwo*2;
+                }
+                console.log("new fftSize:", poTwo*2);
+                analyser.fftSize = poTwo*2;
+            } else {
+                analyser.fftSize = fftSizeDefault;
+            }
+
+            //This only matters much when the fftSize is small.
+            analyser.smoothingTimeConstant = 0;
 
             source.connect(analyser);
             
             const bufferLength = analyser.frequencyBinCount;
             const dataArray = new Float32Array(bufferLength);
-
             
             const canvas = document.getElementById('myCanvas');
             const offScreenCanvas = document.createElement('canvas');
             //Initial height and width is here, then resizing is just with css
-            let WIDTH = window.innerWidth;
             let HEIGHT = window.innerHeight;
-            
+
             let logArr = mapLog(WIDTH, bufferLength);
 
             canvas.width = WIDTH;
@@ -122,6 +141,7 @@ function getData() {
                 }
                 return rgbAll;
             }
+
             let wakeLock = null;
 
             async function requestWakeLock() {
@@ -141,9 +161,6 @@ function getData() {
 
             let rgbAll = makeRGBArr().reverse();
             function drawSpectrogram() {
-
-                //right now the scale isn't logarithmic and I could change that. That was one of the original specifications, but honestly I like it how it is. 
-                //There is a notch at 13000hz, but (the inspiration for this) spectroid has that too. It just isn't as obvious because of the scale.
                 requestWakeLock();
                 requestAnimationFrame(drawSpectrogram);
                 analyser.getFloatFrequencyData(dataArray);
