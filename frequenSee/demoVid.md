@@ -1,4 +1,11 @@
-for the 3 minute demo video
+for the 3 minute video
+
+Project’s title: frequenSee
+Name: James Douglas
+GitHub username: JamesKDouglas
+edX username: jamesthedev100
+City and country; Vancouver, Canada
+Date of recording: December 23, 2024
 
   - Introduction 
     - (me) Name, city, scientist who likes to make instruments and light visualizations that go with music. cs50. Art projects at bass coast and shambhala this summer.

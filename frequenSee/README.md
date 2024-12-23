@@ -1,5 +1,5 @@
 # frequenSee Spectrogram 
-#### Video Demo:  
+#### Video Demo:  https://youtu.be/vLs9gzSbqdQ
 ### Live Demo https://jameskdouglas.github.io/frequenSee/
 #### Description:
 
@@ -86,3 +86,7 @@ Here are some suggestions for trying out the program as it is:
 --
 
 If you want to play with the code, try running a local copy by using http-server and change the color algorithm by changing the size of the for loops or the step size.
+
+Ideas for future development:
+
+ttps://jameskdouglas.github.io/frequenSee/plans.md
