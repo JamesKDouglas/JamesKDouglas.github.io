@@ -1,0 +1,35 @@
+/******************************************
+/* CSS
+/*******************************************/
+
+/* Box Model Hack */
+*{
+  box-sizing: border-box;
+}
+
+/******************************************
+/* LAYOUT
+/*******************************************/
+
+@media only screen and (max-width: 600px) {
+
+	#Chart {
+		visibility:hidden;
+		width:400 px;
+		height: 400 px;
+	}
+	
+	body {
+		zoom:100%;
+		background-color: lightblue;
+	}
+}
+
+/******************************************
+/* ADDITIONAL STYLES
+/*******************************************/
+
+canvas {
+    width: 100%;
+    height: auto;
+}
