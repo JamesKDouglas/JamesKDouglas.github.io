@@ -1,6 +1,6 @@
-# GroundUp Spectrogram 
+# frequenSee Spectrogram 
 #### Video Demo:  
-### Live Demo https://jameskdouglas.github.io/groundUp/
+### Live Demo https://jameskdouglas.github.io/frequenSee/
 #### Description:
 
 This is a music visualization that creates a spectrogram of microphone data (a sonogram). It is the final project for CS50, a computer science course from Harvard. 
@@ -11,10 +11,10 @@ To make it, I learned about streaming audio using the Web Audio API and drawing 
 
 The program takes the sound from your microphone and uses the Web Audio API built into most browsers to perform a mathematical operation called a Fast Fourier Transform. This wizardry makes a list of all the frequencies that you hear and how loud they are. That's what you see on the screen when the app is running. 
 
-Inspiration comes from the Spectroid app, which works well on my old Android phone but can only run on Android devices and not older ones. 
+Inspiration comes from the Spectroid app, which works well on my old Android phone but can only run on Android devices and no~t older ones. 
 
 The goal was to create something that doesn't need to be installed or signed up for. Just use the URL. 
-
+~
 I would like this project to be useful to others in their code journey, which means that it is important to keep it simple. It is meant for display at a party so one of the main specifications is, "no mucking around necessary".
 
 HOW TO USE:
