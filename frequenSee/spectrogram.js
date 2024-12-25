@@ -55,14 +55,13 @@ function getData() {
             const analyser = audioContext.createAnalyser();
             //The resizing works ok but it is based on initial load. If the window is small upon initial load the image will be cropped.
 
-            let fftSize = 2**9;
-            analyser.fftSize = fftSize;
+            let fftSize = 2**11;
             //This parameter is literally the number of bins reported, so it directly affects the frequency resolution.
             //However, it is also linked to time resolution. There is apparently no other way to manage the time resolution.
             let fftSizeDefault = 2**14;//2^12 is 4096. The number of bins used is half this.
             console.log("fftSizeDefault:", fftSizeDefault);
             let WIDTH = window.innerWidth;
-            if (WIDTH>=(fftSizeDefault/2)){
+            if (WIDTH>=(fftSize/2)){
                 console.log("WIDTH:", WIDTH);
                 console.log("Window is wider than the number of frequencies available from the fft. Raising fftSize. This will reduce resolution in the time domain.")
 
@@ -73,9 +72,10 @@ function getData() {
                 console.log("new fftSize:", poTwo*2);
                 analyser.fftSize = poTwo*2;
             } else {
-                analyser.fftSize = fftSizeDefault;
+                analyser.fftSize = fftSize;
             }
-
+            console.log("fftSize set: ", analyser.fftSize);
+            console.log("window width:", WIDTH);
             //This only matters much when the fftSize is small.
             analyser.smoothingTimeConstant = 0;
 

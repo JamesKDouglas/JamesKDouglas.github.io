@@ -18,6 +18,7 @@ Date of recording: December 23, 2024
             - mimo swoop
             - Bird chirps
             - aphex twin spiral
+            - tone generator
         - Note ultrasonic range.
         - Note artifacts - deadband.
   - Goal was to 
@@ -29,3 +30,24 @@ Date of recording: December 23, 2024
             - inputs and outputs selection. 
             - Window resizing. I played around with dynamic resizing but prefer it to be more stable.
  - Thank GPT, Richard, Mom, Dad, Duck and Spectroid. Order?
+
+Use a clock/timer. Use the mouse a lot
+
+(textedit open)
+Hello my name is James Douglas and this is my tour of FrequenSee
+
+This is the final project for harvard's CS50 course. 
+
+(close text editor)
+
+This is a javascript program that analyzes sound data and constructs a "spectrogram". It's taking littls samples of the sound from my macbook microphone and using a fast fourier transform to generate a list of the frequencies present as well as their amplitude.
+
+It's client side only, so you just visit the URL with your browser. 
+
+Across the screen is the frequency axis. There is not axis label because this is meant as a display as a party and I want maximum space for all the pretty colors. 
+
+Let's use a tone generator to explore it and point out some features. Logarithmic scale. Deadband. Frequency resolution
+
+Time domain - aphex twin. Color meter.
+
+Thank you
